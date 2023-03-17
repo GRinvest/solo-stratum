@@ -50,7 +50,6 @@ async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
         # Force update is unnecessary
         if state.height == -1 or state.height != height_int:
             # New block, update everything
-            logger.debug(f"New block {height_int - 1}, update state. New target: {target_hex}")
             new_block = True
 
             # Generate seed hash #
