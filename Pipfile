@@ -16,3 +16,6 @@ base58 = "*"
 [requires]
 python_version = "3.11"
 python_full_version = "3.11.2"
+
+[scripts]
+app = "python main.py"
