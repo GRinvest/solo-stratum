@@ -7,9 +7,6 @@ from loguru import logger
 
 from config import config
 
-BASE_DIR = pathlib.Path(__file__).parent
-COIN = config.general.coin.lower()
-
 
 def module_from_file(module_name, file_path):
     spec = importlib.util.spec_from_file_location(module_name, file_path)
@@ -18,19 +15,10 @@ def module_from_file(module_name, file_path):
     return module
 
 
-MODULE = module_from_file(COIN, f"{BASE_DIR}/stratum/{COIN}.py")
+MODULE = module_from_file('server', f"{pathlib.Path(__file__).parent}/stratum/{config.general.coin.lower()}/server.py")
 
 
-async def job_manager(event: asyncio.Event):
-    while True:
-        await MODULE.state_updater()
-        await asyncio.sleep(0.3)
-        if not event.is_set():
-            event.set()
-
-
-async def run_proxy(event: asyncio.Event):
-    await event.wait()
+async def run_proxy():
     server = await asyncio.start_server(
         MODULE.handle_client,
         config.server.host,
@@ -41,14 +29,10 @@ async def run_proxy(event: asyncio.Event):
 
 
 async def execute():
-    event = asyncio.Event()
     while True:
         logger.success('Running Session Program')
         try:
-            await asyncio.gather(
-                asyncio.create_task(job_manager(event)),
-                asyncio.create_task(run_proxy(event))
-            )
+            await run_proxy()
         except Exception as e:
             logger.exception(e)
 
