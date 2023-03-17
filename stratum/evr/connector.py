@@ -12,7 +12,6 @@ class ConnectorManager:
 
     async def connect(self, writer: asyncio.StreamWriter, message: dict):
         await self.send_personal_message(writer, None, True, message['id'])
-        await self.send_new_job(writer)
         self.active_connectors.add(writer)
 
     async def disconnect(self, writer):
