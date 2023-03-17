@@ -285,6 +285,10 @@ async def handle_client(reader, writer):
 async def state_updater():
     try:
         res = await node.getblocktemplate()
+        while res.get('code', 0) < 0:
+            logger.warning(f'Error getting block template: {res.get("message", "Not found message")}, sleeping 120 sec...')
+            await asyncio.sleep(120)
+            res = await node.getblocktemplate()
         json_obj = res['result']
         version_int: int = json_obj['version']
         height_int: int = json_obj['height']
