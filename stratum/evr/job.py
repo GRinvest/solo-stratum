@@ -8,8 +8,8 @@ from loguru import logger
 from coindrpc import node
 from config import config
 from utils import op_push, var_int, dsha256, merkle_from_txids
-from .connector import manager
-from .state import TemplateState
+from stratum.evr.connector import manager
+from stratum.evr.state import TemplateState
 
 
 async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):

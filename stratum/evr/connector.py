@@ -2,7 +2,7 @@ import asyncio
 
 import ujson
 
-from .state import TemplateState
+from stratum.evr.state import TemplateState
 
 
 class ConnectorManager:
