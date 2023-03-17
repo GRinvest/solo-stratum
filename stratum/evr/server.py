@@ -165,8 +165,8 @@ async def handle_client(reader, writer):
     proxy = Proxy(reader, writer, state)
     try:
         await asyncio.wait([
-            proxy.adapter_handle(),
-            job_manager(state, writer)
+            asyncio.create_task(proxy.adapter_handle()),
+            asyncio.create_task(job_manager(state, writer))
         ], return_when=asyncio.FIRST_COMPLETED)
     except Exception as e:
         logger.error(e)
