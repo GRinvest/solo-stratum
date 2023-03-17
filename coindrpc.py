@@ -29,7 +29,7 @@ class Coind:
                     try:
                         json_obj = await resp.json()
                         if json_obj.get('error', None):
-                            raise Exception(json_obj.get('error', None))
+                            return json_obj.get('error', None)
                     except Exception as e:
                         print(e)
                     else:
