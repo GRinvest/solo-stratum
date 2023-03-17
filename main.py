@@ -7,6 +7,9 @@ from loguru import logger
 
 from config import config
 
+BASE_DIR = pathlib.Path(__file__).parent
+COIN = config.general.coin.lower()
+
 
 def module_from_file(module_name, file_path):
     spec = importlib.util.spec_from_file_location(module_name, file_path)
@@ -15,7 +18,7 @@ def module_from_file(module_name, file_path):
     return module
 
 
-MODULE = module_from_file('server', f"{pathlib.Path(__file__).parent}/stratum/{config.general.coin.lower()}/server.py")
+MODULE = module_from_file('server', f"{BASE_DIR}/stratum/{COIN}/server.py")
 
 
 async def run_proxy():
