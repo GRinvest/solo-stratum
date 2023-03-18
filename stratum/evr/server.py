@@ -129,35 +129,38 @@ class Proxy:
                     logger.debug(f'Worker {self.worker} Reported Hashrate: {round(hashrate / 1000000, 2)} Mh/s ')
 
     async def adapter_handle(self):
-        while not self._reader.at_eof():
-            try:
-                data = await asyncio.wait_for(self._reader.readline(), timeout=10)
-                if not data:
-                    break
-                j: dict = ujson.loads(data)
-            except (TimeoutError, asyncio.TimeoutError):
-                if time() - self.time_block_fond > 60 * 60:
+        try:
+            while not self._reader.at_eof():
+                try:
+                    data = await asyncio.wait_for(self._reader.readline(), timeout=10)
+                    if not data:
+                        break
+                    j: dict = ujson.loads(data)
+                except (TimeoutError, asyncio.TimeoutError):
+                    if time() - self.time_block_fond > 60 * 60:
+                        break
+                    else:
+                        continue
+                except (ValueError, ConnectionResetError):
                     break
                 else:
-                    continue
-            except (ValueError, ConnectionResetError):
-                break
-            else:
-                method = j.get('method')
-                if method == 'mining.subscribe':
-                    await self.handle_subscribe(j)
-                elif method == 'mining.authorize':
-                    await self.handle_authorize(j)
-                elif method == 'mining.submit':
-                    await self.handle_submit(j)
-                elif method == 'eth_submitHashrate':
-                    await self.handle_eth_submitHashrate(j)
-                elif method is not None:
-                    await manager.send_personal_message(self._writer, None, False, None,
-                                                        [20, f'Method {method} not supported'])
-                else:
-                    logger.error(j)
-                    break
+                    method = j.get('method')
+                    if method == 'mining.subscribe':
+                        await self.handle_subscribe(j)
+                    elif method == 'mining.authorize':
+                        await self.handle_authorize(j)
+                    elif method == 'mining.submit':
+                        await self.handle_submit(j)
+                    elif method == 'eth_submitHashrate':
+                        await self.handle_eth_submitHashrate(j)
+                    elif method is not None:
+                        await manager.send_personal_message(self._writer, None, False, None,
+                                                            [20, f'Method {method} not supported'])
+                    else:
+                        logger.error(j)
+                        break
+        finally:
+            self.state.close = True
 
 
 async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):

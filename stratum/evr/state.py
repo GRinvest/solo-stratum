@@ -6,6 +6,7 @@ from utils import var_int
 
 class TemplateState:
     # These refer to the block that we are working on
+    close = False
     height: int = -1
 
     timestamp: int = -1
