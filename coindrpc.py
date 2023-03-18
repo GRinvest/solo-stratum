@@ -1,5 +1,6 @@
 import ujson
 from aiohttp import ClientSession
+from loguru import logger
 
 from config import config
 
@@ -29,9 +30,10 @@ class Coind:
                     try:
                         json_obj = await resp.json()
                         if json_obj.get('error', None):
+                            logger.error(f'coind error: {json_obj}')
                             return json_obj.get('error', None)
                     except Exception as e:
-                        print(e)
+                        logger.error(f'coind error: {e}')
                     else:
                         return json_obj
 
