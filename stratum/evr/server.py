@@ -160,7 +160,7 @@ class Proxy:
                     break
 
 
-async def handle_client(reader, writer):
+async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
     """Создание и проверка подключения"""
     state = TemplateState()
     proxy = Proxy(reader, writer, state)
@@ -176,3 +176,6 @@ async def handle_client(reader, writer):
             await manager.disconnect(writer)
             proxy.hashrate_dict.update({proxy.worker: 0})
             logger.warning(f"worker disconnected {proxy.user}")
+        else:
+            writer.close()
+            await writer.wait_closed()
