@@ -107,7 +107,7 @@ async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
                 len(arbitrary_data)) + arbitrary_data
             coinbase_txin = bytes(32) + b'\xff' * 4 + var_int(len(coinbase_script)) + coinbase_script + b'\xff' * 4
             if time() - state.timestamp_block_fond > 60 * 60:
-                state.update_new_job = random.randint(45, 65)
+                state.update_new_job = random.randint(45, 80)
             else:
                 state.update_new_job = random.randint(80, 120)
             address_ = state.address if state.address != '' else config.general.mining_address
