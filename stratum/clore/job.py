@@ -129,14 +129,14 @@ async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
             state.coinbase_tx = (int(1).to_bytes(4, 'little') +
                                  b'\x00\x01' +
                                  b'\x01' + coinbase_txin +
-                                 b'\x03' +
+                                 b'\x02' +
                                  int(coinbase_sats_int).to_bytes(8, 'little') + op_push(
                         len(vout_to_miner)) + vout_to_miner + int(community_sats_int).to_bytes(8, 'little') + op_push(
                         len(vout_to_community)) + vout_to_community +
                                  bytes(8) + op_push(len(witness_vout)) + witness_vout +
                                  b'\x01\x20' + bytes(32) + bytes(4))
 
-            coinbase_no_wit = int(1).to_bytes(4, 'little') + b'\x01' + coinbase_txin + b'\x03' + int(coinbase_sats_int).to_bytes(8, 'little') + op_push(
+            coinbase_no_wit = int(1).to_bytes(4, 'little') + b'\x01' + coinbase_txin + b'\x02' + int(coinbase_sats_int).to_bytes(8, 'little') + op_push(
                 len(vout_to_miner)) + vout_to_miner + int(community_sats_int).to_bytes(8, 'little') + op_push(
                 len(vout_to_community)) + vout_to_community + bytes(8) + op_push(len(witness_vout)) + witness_vout + bytes(4)
             state.coinbase_txid = dsha256(coinbase_no_wit)
