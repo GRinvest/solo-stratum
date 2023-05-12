@@ -33,12 +33,17 @@ async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
         bits_hex: str = json_obj['bits']
         prev_hash_hex: str = json_obj['previousblockhash']
         txs_list: list = json_obj['transactions']
-        coinbase_sats_int: int = json_obj['coinbasevalue']
+
         witness_hex: str = json_obj['default_witness_commitment']
         target_hex: str = json_obj['target']
 
-        community_addr: str = json_obj['result']['CommunityAutonomousAddress']
-        community_sats_int: int = json_obj['result']['CommunityAutonomousValue']
+        coinbase_sats_int: int = json_obj['coinbasevalue']
+
+        gameplay_addr: str = json_obj['result']['ProofOfGameplayAddress']
+        gameplay_sats_int: int = json_obj['result']['ProofOfGameplayValue']
+
+        dev_addr: str = json_obj['result']['DevFundAddress']
+        dev_sats_int: int = json_obj['result']['DevFundValue']
 
         ts = int(time())
         new_witness = witness_hex != state.current_commitment
@@ -115,7 +120,8 @@ async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
                 state.update_new_job = random.randint(80, 120)
             address_ = state.address if state.address != '' else config.general.mining_address
             vout_to_miner = b'\x76\xa9\x14' + base58.b58decode_check(address_)[1:] + b'\x88\xac'
-            vout_to_community = b'\x76\xa9\x14' + base58.b58decode_check(community_addr)[1:] + b'\x88\xac'
+            vout_to_gameplay = b'\x76\xa9\x14' + base58.b58decode_check(gameplay_addr)[1:] + b'\x88\xac'
+            vout_to_dev = b'\x76\xa9\x14' + base58.b58decode_check(dev_addr)[1:] + b'\x88\xac'
 
             # Concerning the default_witness_commitment:
             # https://github.com/bitcoin/bips/blob/master/bip-0141.mediawiki#commitment-structure
@@ -130,15 +136,24 @@ async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
                                  b'\x00\x01' +
                                  b'\x01' + coinbase_txin +
                                  b'\x03' +
-                                 int(25533961063).to_bytes(8, 'little') + op_push(
-                        len(vout_to_miner)) + vout_to_miner + int(25533961063).to_bytes(8, 'little') + op_push(
-                        len(vout_to_community)) + vout_to_community +
+                                 coinbase_sats_int.to_bytes(8, 'little') + op_push(
+                        len(vout_to_miner)) + vout_to_miner +
+                                 gameplay_sats_int.to_bytes(8, 'little') + op_push(
+                        len(vout_to_gameplay)) + vout_to_gameplay +
+                                 dev_sats_int.to_bytes(8, 'little') + op_push(
+                        len(vout_to_dev)) + vout_to_dev +
                                  bytes(8) + op_push(len(witness_vout)) + witness_vout +
                                  b'\x01\x20' + bytes(32) + bytes(4))
 
-            coinbase_no_wit = int(1).to_bytes(4, 'little') + b'\x01' + coinbase_txin + b'\x03' + int(25533961063).to_bytes(8, 'little') + op_push(
-                len(vout_to_miner)) + vout_to_miner + int(25533961063).to_bytes(8, 'little') + op_push(
-                len(vout_to_community)) + vout_to_community + bytes(8) + op_push(len(witness_vout)) + witness_vout + bytes(4)
+            coinbase_no_wit = int(1).to_bytes(4, 'little') + \
+                              b'\x01' + coinbase_txin + b'\x03' + \
+                              coinbase_sats_int.to_bytes(8, 'little') + op_push(
+                len(vout_to_miner)) + vout_to_miner + \
+                              gameplay_sats_int.to_bytes(8, 'little') + op_push(
+                len(vout_to_gameplay)) + vout_to_gameplay + \
+                              dev_sats_int.to_bytes(8, 'little') + op_push(
+                len(vout_to_dev)) + vout_to_dev + \
+                              bytes(8) + op_push(len(witness_vout)) + witness_vout + bytes(4)
             state.coinbase_txid = dsha256(coinbase_no_wit)
 
             # Create merkle & update txs
