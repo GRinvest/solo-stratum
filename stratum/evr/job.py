@@ -39,11 +39,11 @@ async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
 
         coinbase_sats_int: int = json_obj['coinbasevalue']
 
-        gameplay_addr: str = json_obj['result']['ProofOfGameplayAddress']
-        gameplay_sats_int: int = json_obj['result']['ProofOfGameplayValue']
+        gameplay_addr: str = json_obj['ProofOfGameplayAddress']
+        gameplay_sats_int: int = json_obj['ProofOfGameplayValue']
 
-        dev_addr: str = json_obj['result']['DevFundAddress']
-        dev_sats_int: int = json_obj['result']['DevFundValue']
+        dev_addr: str = json_obj['DevFundAddress']
+        dev_sats_int: int = json_obj['DevFundValue']
 
         ts = int(time())
         new_witness = witness_hex != state.current_commitment
