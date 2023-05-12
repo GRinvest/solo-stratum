@@ -8,9 +8,9 @@ from loguru import logger
 
 from coindrpc import node
 from config import config
-from utils import op_push, var_int, dsha256, merkle_from_txids
 from stratum.evr.connector import manager
 from stratum.evr.state import TemplateState
+from utils import op_push, var_int, dsha256, merkle_from_txids
 
 
 async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
@@ -33,9 +33,17 @@ async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
         bits_hex: str = json_obj['bits']
         prev_hash_hex: str = json_obj['previousblockhash']
         txs_list: list = json_obj['transactions']
-        coinbase_sats_int: int = json_obj['coinbasevalue']
+
         witness_hex: str = json_obj['default_witness_commitment']
         target_hex: str = json_obj['target']
+
+        coinbase_sats_int: int = json_obj['coinbasevalue']
+
+        gameplay_addr: str = json_obj['result']['ProofOfGameplayAddress']
+        gameplay_sats_int: int = json_obj['result']['ProofOfGameplayValue']
+
+        dev_addr: str = json_obj['result']['DevFundAddress']
+        dev_sats_int: int = json_obj['result']['DevFundValue']
 
         ts = int(time())
         new_witness = witness_hex != state.current_commitment
@@ -112,7 +120,8 @@ async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
                 state.update_new_job = random.randint(80, 120)
             address_ = state.address if state.address != '' else config.general.mining_address
             vout_to_miner = b'\x76\xa9\x14' + base58.b58decode_check(address_)[1:] + b'\x88\xac'
-            vout_to_devfund = b'\xa9\x14' + base58.b58decode_check("eHNUGzw8ZG9PGC8gKtnneyMaQXQTtAUm98")[1:] + b'\x87'
+            vout_to_gameplay = b'\xa9\x14' + base58.b58decode_check(gameplay_addr)[1:] + b'\x87'
+            vout_to_dev = b'\xa9\x14' + base58.b58decode_check(dev_addr)[1:] + b'\x87'
 
             # Concerning the default_witness_commitment:
             # https://github.com/bitcoin/bips/blob/master/bip-0141.mediawiki#commitment-structure
@@ -127,18 +136,22 @@ async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
                                  b'\x00\x01' +
                                  b'\x01' + coinbase_txin +
                                  b'\x03' +
-                                 int(coinbase_sats_int * 0.9).to_bytes(8, 'little') + op_push(
+                                 coinbase_sats_int.to_bytes(8, 'little') + op_push(
                         len(vout_to_miner)) + vout_to_miner +
-                                 int(coinbase_sats_int * 0.1).to_bytes(8, 'little') + op_push(
-                        len(vout_to_devfund)) + vout_to_devfund +
+                                 gameplay_sats_int.to_bytes(8, 'little') + op_push(
+                        len(vout_to_gameplay)) + vout_to_gameplay +
+                                 dev_sats_int.to_bytes(8, 'little') + op_push(
+                        len(vout_to_dev)) + vout_to_dev +
                                  bytes(8) + op_push(len(witness_vout)) + witness_vout +
                                  b'\x01\x20' + bytes(32) + bytes(4))
 
             coinbase_no_wit = int(1).to_bytes(4, 'little') + b'\x01' + coinbase_txin + b'\x03' + \
-                              int(coinbase_sats_int * 0.9).to_bytes(8, 'little') + op_push(
+                              coinbase_sats_int.to_bytes(8, 'little') + op_push(
                 len(vout_to_miner)) + vout_to_miner + \
-                              int(coinbase_sats_int * 0.1).to_bytes(8, 'little') + op_push(
-                len(vout_to_devfund)) + vout_to_devfund + \
+                              gameplay_sats_int.to_bytes(8, 'little') + op_push(
+                len(vout_to_gameplay)) + vout_to_gameplay + \
+                              dev_sats_int.to_bytes(8, 'little') + op_push(
+                len(vout_to_dev)) + vout_to_dev + \
                               bytes(8) + op_push(len(witness_vout)) + witness_vout + \
                               bytes(4)
             state.coinbase_txid = dsha256(coinbase_no_wit)
@@ -175,4 +188,3 @@ async def job_manager(state: TemplateState, writer: asyncio.StreamWriter):
     while not state.close:
         await state_updater(state, writer)
         await asyncio.sleep(1)
-
