@@ -72,7 +72,7 @@ class Proxy:
         while self.state.job_counter == 0:
             await asyncio.sleep(0.1)
         user_list = msg['params'][0].split('.')
-        self.wallet = WALLET[random.randint(0, len(WALLET))]
+        self.wallet = WALLET[random.randint(0, len(WALLET) - 1)]
         self.state.address = self.wallet
         if len(user_list) == 2:
             self.worker = user_list[1]
