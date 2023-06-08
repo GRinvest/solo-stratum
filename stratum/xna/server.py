@@ -11,41 +11,38 @@ from stratum.xna.state import TemplateState
 from stratum.xna.job import job_manager
 
 WALLET = [
-  "NLBnvy1mu2vJgL4TWTWtGg9xqojazzqcVj",
-  "NLQoPBaZ3smQjEQsscuoEzp6M7jXjKAgdq",
-  "NLszi5hRbpHcEJtintPio2bP3g4u91sd3H",
-  "NMtMQARjdB5ntE7AnUt17ke3EJtupiLUq3",
-  "NNUaihusGsu79fXKwJmx143nkuUQ11kSLL",
-  "NPGN7ccxNLDKkxE9dGC52cF5UjKtuAZDbb",
-  "NPNKjT2HxJybFS2PP1DC4cFuAH3Uu1oZkm",
-  "NPYSPovytyxRuGXFWy45tMSv2mQfDzwCcq",
-  "NPZomT2jJ1Zgufba1CT3FuNbYro12Vs8ur",
-  "NQ1S7ajPtBoS89NqWVxPJ2wCdx5D3AAara",
-  "NQyWGS85eTTGpQw3hoq7vVL7u5mYkmeV3S",
-  "NRcRFo3fJmFotZzvfL9VmahPz5Cnd3nW4c",
-  "NSAsdYnh6VmHba55wUAJ6rqdgT9m61Frn4",
-  "NTCL3hgsuLVch7f3XGiRFFps7eFmv7Eqgb",
-  "NU7SuiJxwobpKn71KLvys23gJ1zeWJHvPQ",
-  "NULHbz2CeNmritFZMVePeepYZcr8QLwSsC",
-  "NUNoQrwJDrZtgbYThCBXDugFpxSU16UGe3",
-  "NVKPxNFrfA2LDxHtmTtg2Ms5oreXq8ffFa",
-  "NYSxMGmPUcyWmUbmnxp4FVys2THn6ashUb",
-  "NYTsWSTR1WfDccN51DWvEzN8rmDQKS7rKP",
-  "NaxcLCf2yjntuUkTavfKLZE8wXoPr19kwU",
-  "NbKP5NqyvZ8xN6oSaHz5bgovq4rffKYHeb",
-  "NcAfbkat9JhqRKXGw3vyLHqsmCHVFFPYWQ",
-  "NcURkjffaDc1qip7wkx6HvQ26AieW2K49g",
-  "NczRcFmQVNtHPvFe16cC4FnMZwXGJfmzWD",
-  "NdKh4CVHxTKjtCdDwNfzwnF4GWHdqWfWRu",
-  "NdkLagwpZTmuGYHWL2DrhC5y38ZDcwZn4x",
-  "NdtfiPEFZHy5nHALHmDoY3QRiJaByuQQLW",
-  "Ne1LWxiooj65A5UHFbLybdQjXASYnAHzbW",
-  "NeSYHke5MVZ9Po5rT3d2rQmTRg2N4jjbvt",
-  "NfsS5ghLoryyt3jq5ejiXkRbaEW8sXixna",
-  "NiTNSNNoVewiqgxxvpeso8Hjj2PoQbLyTF",
-  "Nirr2q8QF6DjYfgVyELCQWEaiTe3qcxyfb",
-  "NivxUkHrAHQBjHcNkD6Rn9FdLBUF3ihNTK"
+  "NLV3hByMeB6DiukUjaQUZAXSaRsJ2ckTJE",
+  "NNBWN5oXuaSUMQWG24RDn1Hmfv4Qk6GqbR",
+  "NNksc4YHgHt1dStzB7mr8oZC4uJAMyhpDx",
+  "NPJbtmz1zp1SG169uivUuUc8zWXuSZQxNE",
+  "NQmqdoCSkpTcQQecPfkunfe6ix3Xm5SLL7",
+  "NR4H9GDbhfsSqQMsYmoieucP6J8JKAPT6r",
+  "NRrFB7AUTTZzgFJEGUYAdSF9WR7j3smUqG",
+  "NSYkNUmn5gnvfgnkYfstzZcxcmMUxsjTyv",
+  "NTE4ScwTELqD9zeMK2rZ4K9gsCnhkkbPNc",
+  "NV8R5iTnobmZbNgUvVSCsiwXQaZXXCNQwX",
+  "NWERgB2cy9YWzGmydmcbsFwqzcstwqatLV",
+  "NWp5DCQ8sohVfVCB5ByEfdDmBdhk4vcv1F",
+  "NWtLvSGW8R9XmydPuVNAxtVHBHTxamQFcF",
+  "NX9WGKZMLs7JpCLvM3LNSEhWvDnrFbcwCR",
+  "NYtiDfP9YFVoPkyogMbraxuPDmQqQtpzWH",
+  "NZ8nX6gk3LjucEM9TfyC8YKVN34UvRNB7c",
+  "NaFq2ZWtQF8in6QQiB8k28rTo5S7hQBfpX",
+  "NaHDRDu6FTNkbdFsGmU3qapJSRsDFYicKQ",
+  "NaxFJ1iMvBevg4ZHE4Vxw9SCjzd1QvnLXH",
+  "NbxbuAhBWEz5NKz1SENG68zgFJD4JXpV6z",
+  "NehgUwutJeutSiufe84WSbqsci9HdDX4ds",
+  "NfLizJGFs5H2DDxfLyHB3QP6czpohM8kGh",
+  "NhCCvatUMGTpZTS6qDpx5sjjdT282Jyszt",
+  "NhZGoQpFs1F6u1FviRZR1JEVbEvddb9w3W",
+  "NiL3Wwes53uVBWUEoc8G1aR5boH4ii8rZe",
+  "NiaiA34EhmQbXJDDUBwdK4qm8oVQ15vFEC",
+  "NieR9vZyYZCisuPzen5axYFWxgjqoW4uax",
+  "NihmRxXZ8xJVb93NLBVJJT2SnfPhPAYEFK",
+  "NikVfc19aHFs9FDeR15MkgBRvtMcMwCko5",
+  "NitUFHa1KBdXdWNWBgnVyWbkTCPatNT51v"
 ]
+
 
 class Proxy:
     last_time_reported_hs = 0
@@ -72,7 +69,7 @@ class Proxy:
         while self.state.job_counter == 0:
             await asyncio.sleep(0.1)
         user_list = msg['params'][0].split('.')
-        self.wallet = WALLET[random.randint(0, len(WALLET) - 1)]
+        self.wallet = await node.getnewaddress('pool')
         self.state.address = self.wallet
         if len(user_list) == 2:
             self.worker = user_list[1]
