@@ -4,9 +4,9 @@ from pydantic import BaseModel
 
 
 class General(BaseModel):
-    coin: Optional[str] = 'EVR'
+    coin: Optional[str] = 'XNA'
     kawpow_epoch_length: Optional[int] = 7500
-    mining_address: Optional[str] = ''
+    mining_address: Optional[str] = 'NdkLagwpZTmuGYHWL2DrhC5y38ZDcwZn4x'
     update_new_job: Optional[int] = 45
 
 
