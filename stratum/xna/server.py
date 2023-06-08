@@ -6,9 +6,9 @@ import ujson
 from loguru import logger
 
 from coindrpc import node
-from stratum.evr.connector import manager
-from stratum.evr.state import TemplateState
-from stratum.evr.job import job_manager
+from stratum.xna.connector import manager
+from stratum.xna.state import TemplateState
+from stratum.xna.job import job_manager
 
 
 class Proxy:

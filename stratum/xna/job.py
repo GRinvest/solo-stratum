@@ -9,8 +9,8 @@ from loguru import logger
 from coindrpc import node
 from config import config
 from utils import op_push, var_int, dsha256, merkle_from_txids
-from stratum.evr.connector import manager
-from stratum.evr.state import TemplateState
+from stratum.xna.connector import manager
+from stratum.xna.state import TemplateState
 
 
 async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
@@ -111,7 +111,7 @@ async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
             else:
                 state.update_new_job = random.randint(80, 120)
             address_ = state.address if state.address != '' else config.general.mining_address
-            vout_to_miner = b'\x76\xa9\x14' + base58.b58decode_check(config.general.mining_address)[1:] + b'\x88\xac'
+            vout_to_miner = b'\x76\xa9\x14' + base58.b58decode_check(address_)[1:] + b'\x88\xac'
 
             # Concerning the default_witness_commitment:
             # https://github.com/bitcoin/bips/blob/master/bip-0141.mediawiki#commitment-structure
