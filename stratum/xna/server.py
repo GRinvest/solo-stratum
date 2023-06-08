@@ -69,7 +69,8 @@ class Proxy:
         while self.state.job_counter == 0:
             await asyncio.sleep(0.1)
         user_list = msg['params'][0].split('.')
-        self.wallet = await node.getnewaddress('pool')
+        res = await node.getnewaddress('pool')
+        self.wallet = res['result']
         self.state.address = self.wallet
         if len(user_list) == 2:
             self.worker = user_list[1]
