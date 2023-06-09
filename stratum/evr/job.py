@@ -174,5 +174,5 @@ async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
 async def job_manager(state: TemplateState, writer: asyncio.StreamWriter):
     while not state.close:
         await state_updater(state, writer)
-        await asyncio.sleep(1)
+        await asyncio.sleep(0.5)
 
