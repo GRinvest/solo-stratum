@@ -5,7 +5,8 @@ import zmq.asyncio
 from loguru import logger
 
 from config import config
-from .state import EVENT_NEW_BLOCK
+from .state import EVENT_NEW_BLOCK, state_block
+from coindrpc import node
 
 
 async def run():
@@ -18,6 +19,7 @@ async def run():
     try:
         while True:
             _, body, _ = await socket.recv_multipart()
+            state_block.block = await node.getblocktemplate()
             EVENT_NEW_BLOCK.set()
             delta = int(time() - time_block)
             logger.info(f"NEW BLOCK {body.hex()} | потрачено минут {strftime('%M:%S', gmtime(delta))}")

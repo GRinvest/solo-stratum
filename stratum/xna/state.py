@@ -4,6 +4,10 @@ from config import config
 from utils import var_int
 
 
+class TemplateBlock:
+    block = None
+
+
 class TemplateState:
     # These refer to the block that we are working on
     close = False
@@ -49,3 +53,5 @@ class TemplateState:
 
 EVENT_NEW_BLOCK = asyncio.Event()
 state = TemplateState()
+state_block = TemplateBlock()
+

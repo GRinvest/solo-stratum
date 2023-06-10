@@ -10,24 +10,26 @@ from coindrpc import node
 from config import config
 from utils import op_push, var_int, dsha256, merkle_from_txids
 from stratum.xna.connector import manager
-from stratum.xna.state import TemplateState
-from .state import EVENT_NEW_BLOCK
+from .state import EVENT_NEW_BLOCK, state_block, TemplateState
 
 
 async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
     try:
-        res = await node.getblocktemplate()
-        while res.get('code', 0) < 0:
-            if res['code'] == -10:
-                msg = res['message']
-                res = await node.getblockchaininfo()
-                logger.warning(
-                    f"{msg} | Blocks: {res['result']['blocks']} | Headers: {res['result']['headers']}, sleeping 120 sec...")
-            else:
-                logger.warning(
-                    f'Error getting block template: {res.get("message", "Not found message")}, sleeping 120 sec...')
-            await asyncio.sleep(120)
+        if state_block.block is None:
             res = await node.getblocktemplate()
+            while res.get('code', 0) < 0:
+                if res['code'] == -10:
+                    msg = res['message']
+                    res = await node.getblockchaininfo()
+                    logger.warning(
+                        f"{msg} | Blocks: {res['result']['blocks']} | Headers: {res['result']['headers']}, sleeping 120 sec...")
+                else:
+                    logger.warning(
+                        f'Error getting block template: {res.get("message", "Not found message")}, sleeping 120 sec...')
+                await asyncio.sleep(120)
+                res = await node.getblocktemplate()
+        else:
+            res = state_block.block
         json_obj = res['result']
         version_int: int = json_obj['version']
         height_int: int = json_obj['height']
