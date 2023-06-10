@@ -75,7 +75,7 @@ class Proxy:
         if len(user_list) == 2:
             self.worker = user_list[1]
         self.user = f"{self.wallet}.{self.worker}"
-        print(self._writer.transport.get_extra_info())
+        print(self._writer.transport.get_extra_info('peername'))
         await manager.connect(self._writer, msg)
         await manager.send_new_job(self._writer, self.state)
         logger.success(f"User {self.user} connected | ExtraNonce: {self.extra_nonce}")
