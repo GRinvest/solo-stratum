@@ -46,5 +46,9 @@ class TemplateState:
         return self.header.hex() + nonce + mixHash + var_int(
             len(self.externalTxs) + 1).hex() + self.coinbase_tx.hex() + ''.join(self.externalTxs)
 
+    def __init__(self, event):
+        self.event = event
 
-state = TemplateState()
+
+EVENT_NEW_BLOCK = asyncio.Event()
+state = TemplateState(EVENT_NEW_BLOCK)

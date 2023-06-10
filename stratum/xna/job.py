@@ -11,12 +11,11 @@ from config import config
 from utils import op_push, var_int, dsha256, merkle_from_txids
 from stratum.xna.connector import manager
 from stratum.xna.state import TemplateState
-import zmq
-import zmq.asyncio
 
 
 async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
     try:
+        print('running state updater')
         res = await node.getblocktemplate()
         while res.get('code', 0) < 0:
             if res['code'] == -10:
@@ -154,14 +153,6 @@ async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
 
 
 async def job_manager(state: TemplateState, writer: asyncio.StreamWriter):
-    ctx = zmq.asyncio.Context()
-    socket = ctx.socket(zmq.SUB)
-    socket.setsockopt(zmq.RCVHWM, 0)
-    socket.setsockopt_string(zmq.SUBSCRIBE, "hashblock")
-    socket.connect(f"tcp://127.0.0.1:{config.coind.zmq_port}")
-    try:
-        while not state.close:
-            await state_updater(state, writer)
-            _ = await socket.recv_multipart()
-    finally:
-        ctx.destroy()
+    while not state.close:
+        await state_updater(state, writer)
+        await state.event.wait()
