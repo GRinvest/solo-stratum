@@ -80,60 +80,67 @@ class Proxy:
         logger.success(f"User {self.user} connected | ExtraNonce: {self.extra_nonce}")
 
     async def handle_submit(self, msg: dict):
+        count = 0
+        while count < 3:
+            count += 1
+            job_id = msg['params'][1]
+            nonce_hex = msg['params'][2]
+            header_hex = msg['params'][3]
+            mixhash_hex = msg['params'][4]
 
-        job_id = msg['params'][1]
-        nonce_hex = msg['params'][2]
-        header_hex = msg['params'][3]
-        mixhash_hex = msg['params'][4]
+            logger.success(f'Possible solution user: {self.user}')
+            logger.info(job_id)
+            logger.info(header_hex)
 
-        logger.success(f'Possible solution user: {self.user}')
-        logger.info(job_id)
-        logger.info(header_hex)
+            # We can still propogate old jobs; there may be a chance that they get used
+            state_ = self.state
 
-        # We can still propogate old jobs; there may be a chance that they get used
-        state_ = self.state
+            if nonce_hex[:2].lower() == '0x':
+                nonce_hex = nonce_hex[2:]
+            nonce_hex = bytes.fromhex(nonce_hex)[::-1].hex()
+            if mixhash_hex[:2].lower() == '0x':
+                mixhash_hex = mixhash_hex[2:]
+            mixhash_hex = bytes.fromhex(mixhash_hex)[::-1].hex()
 
-        if nonce_hex[:2].lower() == '0x':
-            nonce_hex = nonce_hex[2:]
-        nonce_hex = bytes.fromhex(nonce_hex)[::-1].hex()
-        if mixhash_hex[:2].lower() == '0x':
-            mixhash_hex = mixhash_hex[2:]
-        mixhash_hex = bytes.fromhex(mixhash_hex)[::-1].hex()
+            block_hex = state_.build_block(nonce_hex, mixhash_hex)
+            logger.info(block_hex)
+            res = await node.submitblock(block_hex)
+            logger.info(res)
+            result = res.get('result', None)
+            if result == 'inconclusive':
+                # inconclusive - valid submission but other block may be better, etc.
+                logger.error('Valid block but inconclusive')
+                self.time_block_fond = int(time())
+                self.state.timestamp_block_fond = time()
+                await asyncio.sleep(2)
+                continue
+            elif result == 'duplicate':
+                logger.error('Valid block but duplicate')
+                await manager.send_personal_message(self._writer, None, False, msg['id'], [22, 'Duplicate share'])
+            elif result == 'duplicate-inconclusive':
+                logger.error('Valid block but duplicate-inconclusive')
+            elif result == 'inconclusive-not-best-prevblk':
+                logger.error('Valid block but inconclusive-not-best-prevblk')
+            elif result == 'high-hash':
+                logger.error('low diff')
+                await manager.send_personal_message(self._writer, None, False, msg['id'], [23, 'Low difficulty share'])
+            if result not in (
+                    None, 'inconclusive', 'duplicate', 'duplicate-inconclusive', 'inconclusive-not-best-prevblk',
+                    'high-hash'):
+                logger.error(res['result'])
+                await manager.send_personal_message(self._writer, None, False, msg['id'], [20, res.get('result')])
 
-        block_hex = state_.build_block(nonce_hex, mixhash_hex)
-        logger.info(block_hex)
-        res = await node.submitblock(block_hex)
-        logger.info(res)
-        result = res.get('result', None)
-        if result == 'inconclusive':
-            # inconclusive - valid submission but other block may be better, etc.
-            logger.error('Valid block but inconclusive')
-        elif result == 'duplicate':
-            logger.error('Valid block but duplicate')
-            await manager.send_personal_message(self._writer, None, False, msg['id'], [22, 'Duplicate share'])
-        elif result == 'duplicate-inconclusive':
-            logger.error('Valid block but duplicate-inconclusive')
-        elif result == 'inconclusive-not-best-prevblk':
-            logger.error('Valid block but inconclusive-not-best-prevblk')
-        elif result == 'high-hash':
-            logger.error('low diff')
-            await manager.send_personal_message(self._writer, None, False, msg['id'], [23, 'Low difficulty share'])
-        if result not in (
-                None, 'inconclusive', 'duplicate', 'duplicate-inconclusive', 'inconclusive-not-best-prevblk',
-                'high-hash'):
-            logger.error(res['result'])
-            await manager.send_personal_message(self._writer, None, False, msg['id'], [20, res.get('result')])
-
-        if res.get('result', 0) is None:
-            self.time_block_fond = int(time())
-            self.state.timestamp_block_fond = time()
-            block_height = int.from_bytes(
-                bytes.fromhex(block_hex[(4 + 32 + 32 + 4 + 4) * 2:(4 + 32 + 32 + 4 + 4 + 4) * 2]), 'little',
-                signed=False)
-            msg_ = f'Found block user {self.user} (may or may not be accepted by the chain): {block_height}'
-            logger.success(msg_)
-            await manager.send_personal_message(self._writer, None, True, msg['id'])
-            await manager.send_personal_message(self._writer, 'client.show_message', [msg_])
+            if res.get('result', 0) is None:
+                self.time_block_fond = int(time())
+                self.state.timestamp_block_fond = time()
+                block_height = int.from_bytes(
+                    bytes.fromhex(block_hex[(4 + 32 + 32 + 4 + 4) * 2:(4 + 32 + 32 + 4 + 4 + 4) * 2]), 'little',
+                    signed=False)
+                msg_ = f'Found block user {self.user} (may or may not be accepted by the chain): {block_height}'
+                logger.success(msg_)
+                await manager.send_personal_message(self._writer, None, True, msg['id'])
+                await manager.send_personal_message(self._writer, 'client.show_message', [msg_])
+            break
 
     async def handle_eth_submitHashrate(self, msg: dict):
         res = await node.getmininginfo()
