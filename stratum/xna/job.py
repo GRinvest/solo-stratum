@@ -16,7 +16,6 @@ from .state import EVENT_NEW_BLOCK
 
 async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
     try:
-        print('running state updater')
         res = await node.getblocktemplate()
         while res.get('code', 0) < 0:
             if res['code'] == -10:
