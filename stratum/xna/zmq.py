@@ -3,7 +3,7 @@ import zmq.asyncio
 from loguru import logger
 
 from config import config
-from state import EVENT_NEW_BLOCK
+from .state import EVENT_NEW_BLOCK
 
 
 async def run():
