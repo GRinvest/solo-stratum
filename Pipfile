@@ -10,6 +10,7 @@ pydantic = "*"
 ujson = "*"
 aiohttp = "*"
 base58 = "*"
+pyzmq = "*"
 
 [dev-packages]
 

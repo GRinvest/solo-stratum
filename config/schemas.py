@@ -20,6 +20,7 @@ class Coind(BaseModel):
     rpc_port: Optional[int] = 9766
     rpc_user: Optional[str] = 'User'
     rpc_password: Optional[str] = 'Password'
+    zmq_port: Optional[int] = 19002
 
 
 class Config(BaseModel):

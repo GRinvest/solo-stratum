@@ -11,6 +11,7 @@ from config import config
 from utils import op_push, var_int, dsha256, merkle_from_txids
 from stratum.xna.connector import manager
 from stratum.xna.state import TemplateState
+from .zmq import run as zmq_server
 
 
 async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
@@ -168,6 +169,7 @@ async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
 
 async def job_manager(state: TemplateState, writer: asyncio.StreamWriter):
     while not state.close:
+        await zmq_server()
         await state_updater(state, writer)
         await asyncio.sleep(1)
 
