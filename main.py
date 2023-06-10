@@ -6,6 +6,8 @@ import sys
 from loguru import logger
 
 from config import config
+from stratum.xna.zmq import run as zmq_server
+
 
 BASE_DIR = pathlib.Path(__file__).parent
 COIN = config.general.coin.lower()
@@ -35,7 +37,7 @@ async def execute():
     while True:
         logger.success('Running Session Program')
         try:
-            await run_proxy()
+            await asyncio.gather(run_proxy(), zmq_server())
         except Exception as e:
             logger.exception(e)
 

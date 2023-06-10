@@ -2,7 +2,7 @@ import asyncio
 import zmq
 import zmq.asyncio
 from config import config
-import struct
+from loguru import logger
 
 
 async def run():
@@ -11,10 +11,7 @@ async def run():
     socket.setsockopt(zmq.RCVHWM, 0)
     socket.setsockopt_string(zmq.SUBSCRIBE, "hashblock")
     socket.connect("tcp://127.0.0.1:%i" % config.coind.zmq_port)
-    topic, body, seq = await socket.recv_multipart()
-    sequence = "Unknown"
-    if len(seq) == 4:
-        sequence = str(struct.unpack('<I', seq)[-1])
-    if topic == b"hashblock":
-        print('- HASH BLOCK (' + sequence + ') -')
-        print(body.hex())
+    while True:
+        _, body, _ = await socket.recv_multipart()
+        logger.info(f'NEW BLOCK {body.hex()}')
+
