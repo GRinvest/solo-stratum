@@ -29,6 +29,7 @@ async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
                 await asyncio.sleep(120)
                 res = await node.getblocktemplate()
             json_obj = res['result']
+            state_block.block = json_obj
         else:
             json_obj = state_block.block
 
