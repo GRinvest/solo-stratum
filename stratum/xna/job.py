@@ -11,6 +11,7 @@ from config import config
 from utils import op_push, var_int, dsha256, merkle_from_txids
 from stratum.xna.connector import manager
 from stratum.xna.state import TemplateState
+from .state import EVENT_NEW_BLOCK
 
 
 async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
@@ -155,4 +156,4 @@ async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
 async def job_manager(state: TemplateState, writer: asyncio.StreamWriter):
     while not state.close:
         await state_updater(state, writer)
-        await state.event.wait()
+        await EVENT_NEW_BLOCK.wait()

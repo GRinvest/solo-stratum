@@ -1,9 +1,9 @@
-import asyncio
 import zmq
 import zmq.asyncio
-from config import config
 from loguru import logger
-from .state import state
+
+from config import config
+from state import EVENT_NEW_BLOCK
 
 
 async def run():
@@ -15,9 +15,9 @@ async def run():
     try:
         while True:
             _, body, _ = await socket.recv_multipart()
-            state.event.set()
+            EVENT_NEW_BLOCK.set()
             logger.info(f'NEW BLOCK {body.hex()}')
-            state.event.clear()
+            EVENT_NEW_BLOCK.clear()
     finally:
         ctx.destroy()
 
