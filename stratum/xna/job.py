@@ -28,9 +28,10 @@ async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
                         f'Error getting block template: {res.get("message", "Not found message")}, sleeping 120 sec...')
                 await asyncio.sleep(120)
                 res = await node.getblocktemplate()
+            json_obj = res['result']
         else:
-            res = state_block.block
-        json_obj = res['result']
+            json_obj = state_block.block
+
         version_int: int = json_obj['version']
         height_int: int = json_obj['height']
         bits_hex: str = json_obj['bits']

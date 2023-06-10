@@ -19,7 +19,8 @@ async def run():
     try:
         while True:
             _, body, _ = await socket.recv_multipart()
-            state_block.block = await node.getblocktemplate()
+            res = await node.getblocktemplate()
+            state_block.block = res['result']
             EVENT_NEW_BLOCK.set()
             delta = int(time() - time_block)
             logger.info(f"NEW BLOCK {body.hex()} | потрачено минут {strftime('%M:%S', gmtime(delta))}")
