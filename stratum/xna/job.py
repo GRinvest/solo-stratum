@@ -13,9 +13,9 @@ from stratum.xna.connector import manager
 from .state import EVENT_NEW_BLOCK, state_block, TemplateState
 
 
-async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
+async def state_updater(state: TemplateState, writer: asyncio.StreamWriter, timout: bool = False):
     try:
-        if state_block.block is None:
+        if state_block.block is None or timout:
             res = await node.getblocktemplate()
             while res.get('code', 0) < 0:
                 if res['code'] == -10:
@@ -145,8 +145,9 @@ async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
 
 
 async def job_manager(state: TemplateState, writer: asyncio.StreamWriter):
+    t = True
     while not state.close:
-        await state_updater(state, writer)
+        await state_updater(state, writer, t)
         if time() - state.timestamp_block_fond > 60 * 5:
             timout = random.randint(20, 30)
         else:
@@ -154,4 +155,6 @@ async def job_manager(state: TemplateState, writer: asyncio.StreamWriter):
         try:
             await asyncio.wait(EVENT_NEW_BLOCK.wait(), timeout=timout)
         except asyncio.TimeoutError:
-            pass
+            t = True
+        else:
+            t = False
