@@ -13,9 +13,9 @@ from stratum.xna.connector import manager
 from .state import EVENT_NEW_BLOCK, state_block, TemplateState
 
 
-async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
+async def state_updater(state: TemplateState, writer: asyncio.StreamWriter, new_work):
     try:
-        if state_block.block is None:
+        if new_work:
             res = await node.getblocktemplate()
             while res.get('code', 0) < 0:
                 if res['code'] == -10:
@@ -96,10 +96,7 @@ async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
         coinbase_script = op_push(len(bip34_height)) + bip34_height + b'\0' + op_push(
             len(arbitrary_data)) + arbitrary_data
         coinbase_txin = bytes(32) + b'\xff' * 4 + var_int(len(coinbase_script)) + coinbase_script + b'\xff' * 4
-        if time() - state.timestamp_block_fond > 60 * 60:
-            state.update_new_job = random.randint(45, 80)
-        else:
-            state.update_new_job = random.randint(80, 120)
+
         address_ = state.address if state.address != '' else config.general.mining_address
         vout_to_miner = b'\x76\xa9\x14' + base58.b58decode_check(address_)[1:] + b'\x88\xac'
 
@@ -157,6 +154,16 @@ async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
 
 
 async def job_manager(state: TemplateState, writer: asyncio.StreamWriter):
+    new_work = True
     while not state.close:
-        await state_updater(state, writer)
-        await EVENT_NEW_BLOCK.wait()
+        await state_updater(state, writer, new_work)
+        if time() - state.timestamp_block_fond > 60 * 5:
+            state.update_new_job = random.randint(20, 30)
+        else:
+            state.update_new_job = random.randint(45, 90)
+        try:
+            await asyncio.wait(EVENT_NEW_BLOCK.wait(), timeout=state.update_new_job)
+        except asyncio.TimeoutError:
+            new_work = True
+        else:
+            new_work = False
