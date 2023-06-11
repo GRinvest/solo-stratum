@@ -96,8 +96,12 @@ async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
         coinbase_script = op_push(len(bip34_height)) + bip34_height + b'\0' + op_push(
             len(arbitrary_data)) + arbitrary_data
         coinbase_txin = bytes(32) + b'\xff' * 4 + var_int(len(coinbase_script)) + coinbase_script + b'\xff' * 4
-
-        vout_to_miner = b'\x76\xa9\x14' + base58.b58decode_check(state.address)[1:] + b'\x88\xac'
+        if time() - state.timestamp_block_fond > 60 * 60:
+            state.update_new_job = random.randint(45, 80)
+        else:
+            state.update_new_job = random.randint(80, 120)
+        address_ = state.address if state.address != '' else config.general.mining_address
+        vout_to_miner = b'\x76\xa9\x14' + base58.b58decode_check(address_)[1:] + b'\x88\xac'
 
         # Concerning the default_witness_commitment:
         # https://github.com/bitcoin/bips/blob/master/bip-0141.mediawiki#commitment-structure
@@ -108,12 +112,20 @@ async def state_updater(state: TemplateState, writer: asyncio.StreamWriter):
 
         witness_vout = bytes.fromhex(witness_hex)
 
-        state.coinbase_tx = (int(1).to_bytes(4, 'little') + b'\x00\x01' + b'\x01' + coinbase_txin + b'\x02' +
-                             coinbase_sats_int.to_bytes(8, 'little') + op_push(len(vout_to_miner)) + vout_to_miner +
-                             bytes(8) + op_push(len(witness_vout)) + witness_vout +
+        state.coinbase_tx = (int(1).to_bytes(4, 'little') + \
+                             b'\x00\x01' + \
+                             b'\x01' + coinbase_txin + \
+                             b'\x02' + \
+                             coinbase_sats_int.to_bytes(8, 'little') + op_push(len(vout_to_miner)) + vout_to_miner + \
+                             bytes(8) + op_push(len(witness_vout)) + witness_vout + \
                              b'\x01\x20' + bytes(32) + bytes(4))
 
-        coinbase_no_wit = int(1).to_bytes(4, 'little') + b'\x01' + coinbase_txin + b'\x02' + coinbase_sats_int.to_bytes(8, 'little') + op_push(len(vout_to_miner)) + vout_to_miner + bytes(8) + op_push(len(witness_vout)) + witness_vout + bytes(4)
+        coinbase_no_wit = int(1).to_bytes(4, 'little') + \
+                          b'\x01' + coinbase_txin + \
+                          b'\x02' + \
+                          coinbase_sats_int.to_bytes(8, 'little') + op_push(len(vout_to_miner)) + vout_to_miner + \
+                          bytes(8) + op_push(len(witness_vout)) + witness_vout + \
+                          bytes(4)
         state.coinbase_txid = dsha256(coinbase_no_wit)
 
         # Create merkle & update txs
