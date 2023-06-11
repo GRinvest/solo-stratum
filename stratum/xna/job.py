@@ -162,7 +162,7 @@ async def job_manager(state: TemplateState, writer: asyncio.StreamWriter):
         else:
             state.update_new_job = random.randint(45, 90)
         try:
-            await asyncio.wait(EVENT_NEW_BLOCK.wait(), timeout=state.update_new_job)
+            await asyncio.wait_for(EVENT_NEW_BLOCK.wait(), timeout=state.update_new_job)
         except asyncio.TimeoutError:
             new_work = True
         else:
