@@ -15,7 +15,7 @@ from .state import EVENT_NEW_BLOCK, state_block, TemplateState
 
 async def state_updater(state: TemplateState, writer: asyncio.StreamWriter, new_work):
     try:
-        if new_work:
+        if state_block.block is None or new_work:
             res = await node.getblocktemplate()
             while res.get('code', 0) < 0:
                 if res['code'] == -10:
@@ -154,13 +154,13 @@ async def state_updater(state: TemplateState, writer: asyncio.StreamWriter, new_
 
 
 async def job_manager(state: TemplateState, writer: asyncio.StreamWriter):
-    new_work = True
+    new_work = False
     while not state.close:
         await state_updater(state, writer, new_work)
         if time() - state.timestamp_block_fond > 60 * 5:
             state.update_new_job = random.randint(20, 30)
         else:
-            state.update_new_job = random.randint(45, 90)
+            state.update_new_job = random.randint(30, 90)
         try:
             await asyncio.wait_for(EVENT_NEW_BLOCK.wait(), timeout=state.update_new_job)
         except asyncio.TimeoutError:
