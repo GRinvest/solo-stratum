@@ -177,7 +177,7 @@ class Proxy:
                         break
                     j: dict = ujson.loads(data)
                 except (TimeoutError, asyncio.TimeoutError):
-                    if time() - self.time_block_fond > 60 * 60:
+                    if time() - self.time_block_fond > 60 * 7:
                         break
                     else:
                         continue
