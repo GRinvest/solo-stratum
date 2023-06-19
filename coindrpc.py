@@ -48,3 +48,9 @@ node = Coind(config.coind.rpc_user,
              config.coind.rpc_password,
              config.coind.rpc_port,
              config.coind.rpc_host)
+
+node_wallet = Coind(
+    config.coind_wallet.rpc_user,
+    config.coind_wallet.rpc_password,
+    config.coind_wallet.rpc_port,
+    config.coind_wallet.rpc_host)

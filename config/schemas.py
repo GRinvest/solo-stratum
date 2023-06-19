@@ -17,14 +17,22 @@ class Server(BaseModel):
 
 class Coind(BaseModel):
     rpc_host: Optional[str] = '127.0.0.1'
-    rpc_port: Optional[int] = 9766
-    rpc_user: Optional[str] = 'User'
-    rpc_password: Optional[str] = 'Password'
+    rpc_port: Optional[int] = 19001
+    rpc_user: Optional[str] = 'GRinvest'
+    rpc_password: Optional[str] = 'GR458099'
     zmq_port: Optional[int] = 19002
+
+
+class CoindWallet(BaseModel):
+    rpc_host: Optional[str] = '127.0.0.1'
+    rpc_port: Optional[int] = 19004
+    rpc_user: Optional[str] = 'GRinvest'
+    rpc_password: Optional[str] = 'GR458099'
 
 
 class Config(BaseModel):
     general: General
     server: Server
     coind: Coind
+    coind_wallet: CoindWallet
 

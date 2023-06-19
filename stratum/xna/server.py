@@ -5,10 +5,11 @@ from time import time
 import ujson
 from loguru import logger
 
-from coindrpc import node
+from coindrpc import node, node_wallet
 from stratum.xna.connector import manager
 from stratum.xna.state import TemplateState
 from stratum.xna.job import job_manager
+from .state import EVENT_NEW_BLOCK
 
 WALLET = [
   "NLV3hByMeB6DiukUjaQUZAXSaRsJ2ckTJE",
@@ -69,7 +70,7 @@ class Proxy:
         while self.state.job_counter == 0:
             await asyncio.sleep(0.1)
         user_list = msg['params'][0].split('.')
-        res = await node.getnewaddress('pool')
+        res = await node_wallet.getnewaddress('pool')
         self.wallet = res['result']
         self.state.address = self.wallet
         if len(user_list) == 2:
@@ -81,7 +82,7 @@ class Proxy:
 
     async def handle_submit(self, msg: dict):
         count = 0
-        while count < 3:
+        while count < 10:
             count += 1
             job_id = msg['params'][1]
             nonce_hex = msg['params'][2]
@@ -107,12 +108,13 @@ class Proxy:
             res = await node.submitblock(block_hex)
             logger.info(res)
             result = res.get('result', None)
-            if result == 'inconclusive':
+            if result in ['inconclusive', 'high-hash']:
                 # inconclusive - valid submission but other block may be better, etc.
-                logger.error('Valid block but inconclusive')
+                logger.error(result)
                 self.time_block_fond = int(time())
                 self.state.timestamp_block_fond = time()
-                await asyncio.sleep(2)
+                await EVENT_NEW_BLOCK.wait()
+                await asyncio.sleep(1)
                 continue
             elif result == 'duplicate':
                 logger.error('Valid block but duplicate')
@@ -121,9 +123,6 @@ class Proxy:
                 logger.error('Valid block but duplicate-inconclusive')
             elif result == 'inconclusive-not-best-prevblk':
                 logger.error('Valid block but inconclusive-not-best-prevblk')
-            elif result == 'high-hash':
-                logger.error('low diff')
-                await manager.send_personal_message(self._writer, None, False, msg['id'], [23, 'Low difficulty share'])
             if result not in (
                     None, 'inconclusive', 'duplicate', 'duplicate-inconclusive', 'inconclusive-not-best-prevblk',
                     'high-hash'):

@@ -26,6 +26,7 @@ def load_config(path=DEFAULT_CONFIG_PATH) -> schemas.Config:
                 general={},
                 server={},
                 coind={},
+                coind_wallet={},
             ).dict(), f)
         raise SystemExit(1)
     else:
