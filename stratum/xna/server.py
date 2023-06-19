@@ -24,7 +24,7 @@ class Proxy:
         self.worker = 'anonymous'
         self.extra_nonce: str = ''
         self.time_block_fond: int = int(time())
-        self.timeout = 10
+        self.timeout = 12
 
     async def handle_subscribe(self, msg: dict):
         while True:
