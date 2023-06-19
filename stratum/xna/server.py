@@ -8,41 +8,7 @@ from loguru import logger
 from coindrpc import node, node_wallet
 from stratum.xna.connector import manager
 from stratum.xna.state import TemplateState
-from stratum.xna.job import job_manager
-from .state import EVENT_NEW_BLOCK
-
-WALLET = [
-  "NLV3hByMeB6DiukUjaQUZAXSaRsJ2ckTJE",
-  "NNBWN5oXuaSUMQWG24RDn1Hmfv4Qk6GqbR",
-  "NNksc4YHgHt1dStzB7mr8oZC4uJAMyhpDx",
-  "NPJbtmz1zp1SG169uivUuUc8zWXuSZQxNE",
-  "NQmqdoCSkpTcQQecPfkunfe6ix3Xm5SLL7",
-  "NR4H9GDbhfsSqQMsYmoieucP6J8JKAPT6r",
-  "NRrFB7AUTTZzgFJEGUYAdSF9WR7j3smUqG",
-  "NSYkNUmn5gnvfgnkYfstzZcxcmMUxsjTyv",
-  "NTE4ScwTELqD9zeMK2rZ4K9gsCnhkkbPNc",
-  "NV8R5iTnobmZbNgUvVSCsiwXQaZXXCNQwX",
-  "NWERgB2cy9YWzGmydmcbsFwqzcstwqatLV",
-  "NWp5DCQ8sohVfVCB5ByEfdDmBdhk4vcv1F",
-  "NWtLvSGW8R9XmydPuVNAxtVHBHTxamQFcF",
-  "NX9WGKZMLs7JpCLvM3LNSEhWvDnrFbcwCR",
-  "NYtiDfP9YFVoPkyogMbraxuPDmQqQtpzWH",
-  "NZ8nX6gk3LjucEM9TfyC8YKVN34UvRNB7c",
-  "NaFq2ZWtQF8in6QQiB8k28rTo5S7hQBfpX",
-  "NaHDRDu6FTNkbdFsGmU3qapJSRsDFYicKQ",
-  "NaxFJ1iMvBevg4ZHE4Vxw9SCjzd1QvnLXH",
-  "NbxbuAhBWEz5NKz1SENG68zgFJD4JXpV6z",
-  "NehgUwutJeutSiufe84WSbqsci9HdDX4ds",
-  "NfLizJGFs5H2DDxfLyHB3QP6czpohM8kGh",
-  "NhCCvatUMGTpZTS6qDpx5sjjdT282Jyszt",
-  "NhZGoQpFs1F6u1FviRZR1JEVbEvddb9w3W",
-  "NiL3Wwes53uVBWUEoc8G1aR5boH4ii8rZe",
-  "NiaiA34EhmQbXJDDUBwdK4qm8oVQ15vFEC",
-  "NieR9vZyYZCisuPzen5axYFWxgjqoW4uax",
-  "NihmRxXZ8xJVb93NLBVJJT2SnfPhPAYEFK",
-  "NikVfc19aHFs9FDeR15MkgBRvtMcMwCko5",
-  "NitUFHa1KBdXdWNWBgnVyWbkTCPatNT51v"
-]
+from stratum.xna.job import job_manager, EVENT_NEW_BLOCK
 
 
 class Proxy:
