@@ -24,7 +24,7 @@ class Proxy:
         self.worker = 'anonymous'
         self.extra_nonce: str = ''
         self.time_block_fond: int = int(time())
-        self.timeout = 12
+        self.timeout = 20
 
     async def handle_subscribe(self, msg: dict):
         while True:
@@ -99,7 +99,7 @@ class Proxy:
             if res.get('result', 0) is None:
                 self.time_block_fond = int(time())
                 self.state.timestamp_block_fond = time()
-                self.timeout = 20
+                self.timeout = 30
                 block_height = int.from_bytes(
                     bytes.fromhex(block_hex[(4 + 32 + 32 + 4 + 4) * 2:(4 + 32 + 32 + 4 + 4 + 4) * 2]), 'little',
                     signed=False)
